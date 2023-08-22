@@ -1,0 +1,29 @@
+.hero {
+  padding: 60px 0 50px 0;
+}
+
+.hero__container {
+  position: relative;
+
+  padding: 57px 0;
+}
+
+.hero__container:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -9px;
+  width: 421px;
+  height: 330px;
+  background-image: url('../images/laptop.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.hero__title {
+  max-width: 780px;
+  font-size: 90px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
