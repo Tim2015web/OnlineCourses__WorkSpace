@@ -105,8 +105,29 @@ const renderModal = (data) => {
   modalMain.append(modalClose);
   modal.append(modalMain);
   document.body.append(modal);
+
+  // Вызвать функцию удаления Modal
+  closeModal();
 };
 
+// Функция удаления Modal
+const closeModal = (data) => {
+  const closeBtn = document.querySelector('.modal__close');
+  const closeModal = document.querySelector('.modal');
+  const falseModal = document.querySelector('.modal__main');
+
+  falseModal.addEventListener('click', (event) => {
+    event.stopPropagation();
+  });
+
+  closeModal.addEventListener('click', () => {
+    closeModal.remove();
+  });
+
+  closeBtn.addEventListener('click', () => {
+    closeModal.remove();
+  });
+};
 
 
 const openModal = (id) => {
@@ -156,8 +177,7 @@ const init = () => {
       const vacancyId = vacancyCard.dataset.id;
       openModal(vacancyId);
     }
-  })
+  });
 };
 
 init();
-

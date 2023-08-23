@@ -20,6 +20,7 @@
   line-height: 0;
   outline: 1px solid transparent;
   border-radius: 3px;
+  z-index: 20;
 }
 
 .modal__close:focus-visible {
