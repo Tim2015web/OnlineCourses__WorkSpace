@@ -8,8 +8,10 @@
 }
 
 html {
+  scroll-behavior: smooth;
   position: relative;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 *,
@@ -19,6 +21,8 @@ html {
 }
 
 body {
+  position: relative;
+  overflow-x: hidden;
   min-width: 320px;
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
