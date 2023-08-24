@@ -230,3 +230,11 @@ const init = () => {
 };
 
 init();
+
+// Открыть фильтр
+let filterBtn = document.querySelector('.vacancies__filter-btn');
+let filterDiv = document.querySelector('.vacancies__filter');
+
+filterBtn.addEventListener('click', () => {
+  filterDiv.classList.toggle('vacancies__filter_active');
+});
