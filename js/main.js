@@ -3,13 +3,17 @@ const API_URL = "https://workspace-methed.vercel.app/";
 const LOCATION_URL = "api/locations";
 const VACANCY_URL = "api/vacancy";
 
+const cardsList = document.querySelector('.cards__list');
+let lastUrl = '';
+const pagination = {};
+
 const getData = async (url, cbSuccess, cbError) => {
   try {
     const response = await fetch(url);
     const data = await response.json();
-    cbSuccess(data)
+    cbSuccess(data);
   } catch (err) {
-    cbError(err)
+    cbError(err);
   }
 }
 
@@ -35,10 +39,40 @@ const createCards = (data) =>
     return li;
   });
 
-const renderVacancy = (data, cardsList) => {
+const renderVacancies = (data) => {
   cardsList.textContent = "";
   const cards = createCards(data);
   cardsList.append(...cards);
+
+  if (data.pagination) {
+    Object.assign(pagination, data.pagination);
+  }
+
+  observer.observe(cardsList.lastElementChild);
+};
+
+const renderMoreVacancies = (data) => {
+  const cardsList = document.querySelector('.cards__list');
+  const cards = createCards(data);
+  cardsList.append(...cards);
+
+  if (data.pagination) {
+    Object.assign(pagination, data.pagination);
+  }
+
+  observer.observe(cardsList.lastElementChild);
+};
+
+const loadMoreVacancies = () => {
+  if (pagination.totalPages > pagination.currentPage) {
+    const urlWithParams = new URL(lastUrl);
+    urlWithParams.searchParams.set('page', pagination.currentPage + 1);
+    urlWithParams.searchParams.set('limit', window.innerWidth < 768 ? 6 : 12);
+
+    getData(urlWithParams, renderMoreVacancies, renderError).then(() => {
+      lastUrl = urlWithParams;
+    });
+  };
 };
 
 const renderError = (err) => {
@@ -106,37 +140,36 @@ const renderModal = (data) => {
   modal.append(modalMain);
   document.body.append(modal);
 
-  // Вызвать функцию удаления Modal
-  closeModal();
+  // Close Modal (clear)
+  modal.addEventListener('click', ({ target }) => {
+    if (target === modal || target.closest('.modal__close')) {
+      modal.remove();
+    }
+  });
+
 };
-
-// Функция удаления Modal
-const closeModal = (data) => {
-  const closeBtn = document.querySelector('.modal__close');
-  const closeModal = document.querySelector('.modal');
-  const falseModal = document.querySelector('.modal__main');
-
-  falseModal.addEventListener('click', (event) => {
-    event.stopPropagation();
-  });
-
-  closeModal.addEventListener('click', () => {
-    closeModal.remove();
-  });
-
-  closeBtn.addEventListener('click', () => {
-    closeModal.remove();
-  });
-};
-
 
 const openModal = (id) => {
   getData(`${API_URL}${VACANCY_URL}/${id}`, renderModal, renderError);
 };
 
+// Подгрузка остальных
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        loadMoreVacancies();
+      }
+    })
+  },
+  {
+    rootMargin: '100px'
+  }
+);
+
 const init = () => {
 
-  const cardsList = document.querySelector('.cards__list');
+  const filterForm = document.querySelector('.filter__form');
 
   // Plugin Choices.js
   const citySelect = document.querySelector('#city');
@@ -160,24 +193,40 @@ const init = () => {
   );
 
   // Cards
-  const url = new URL(`${API_URL}${VACANCY_URL}`)
+  const urlWithParams = new URL(`${API_URL}${VACANCY_URL}`);
 
-  getData(
-    url,
-    (data) => {
-      renderVacancy(data, cardsList);
-    },
-    renderError,
-  );
+  urlWithParams.searchParams.set('limit', window.innerWidth < 768 ? 6 : 12);
+  urlWithParams.searchParams.set('page', 1);
 
+  getData(urlWithParams, renderVacancies, renderError).then(() => {
+    lastUrl = urlWithParams;
+  });
+
+  // Modal
   cardsList.addEventListener('click', ({ target }) => {
     const vacancyCard = target.closest('.vacancy');
-    console.log(vacancyCard);
     if (vacancyCard) {
       const vacancyId = vacancyCard.dataset.id;
       openModal(vacancyId);
     }
   });
+
+  // Filter
+  filterForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const formData = new FormData(filterForm);
+
+    const urlWithParam = new URL(`${API_URL}${VACANCY_URL}`);
+
+    formData.forEach((value, key) => {
+      urlWithParam.searchParams.append(key, value);
+    });
+
+    getData(urlWithParam, renderVacancies, renderError).then(() => {
+      lastUrl = urlWithParam;
+    });
+  });
+
 };
 
 init();
