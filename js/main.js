@@ -208,8 +208,8 @@ const init = () => {
   // Plugin Choices.js
   const citySelect = document.querySelector('#city');
   const cityChoices = new Choices(citySelect, {
-    searchEnabled: true,
-    itemSelectText: '',
+    searchEnabled: false,
+    itemSelectText: ''
   });
 
   // Adaptive Filter
