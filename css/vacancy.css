@@ -4,6 +4,17 @@
   background-color: #ffffff;
   height: 100%;
   cursor: pointer;
+  outline: none;
+  border: 2px solid transparent;
+  transition: background-color 0.1s ease-in-out;
+}
+
+.vacancy:hover {
+  background-color: #f9faff;
+}
+
+.vacancy:focus-visible {
+  border-color: #a6adff;
 }
 
 .vacancy__img {
